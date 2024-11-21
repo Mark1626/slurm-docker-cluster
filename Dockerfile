@@ -32,6 +32,12 @@ RUN set -ex \
        vim-enhanced \
        http-parser-devel \
        json-c-devel \
+       libyaml-devel \
+       autoconf \
+       automake \
+       libtool \
+       libtool-ltdl-devel \
+       jansson-devel \
     && yum clean all \
     && rm -rf /var/cache/yum
 
@@ -51,6 +57,22 @@ RUN set -ex \
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true
 
+RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git libjwt \
+    && pushd libjwt \
+    && autoreconf --force --install \
+    && ./configure --prefix=/usr/local \
+    && make -j \
+    && make install \
+    && popd
+
+RUN git clone --depth 1 --single-branch -b 0.2.5 https://github.com/yaml/libyaml libyaml \
+    && pushd libyaml \
+    && ./bootstrap \
+    && ./configure \
+    && make \
+    && make install \
+    && popd
+
 ARG SLURM_TAG
 
 RUN set -x \
@@ -58,6 +80,7 @@ RUN set -x \
     && pushd slurm \
     && ./configure --enable-debug --prefix=/usr --sysconfdir=/etc/slurm \
         --with-mysql_config=/usr/bin  --libdir=/usr/lib64 \
+        --with-yaml=/usr/local/ --with-jwt=/usr/local/ \
     && make install \
     && install -D -m644 etc/cgroup.conf.example /etc/slurm/cgroup.conf.example \
     && install -D -m644 etc/slurm.conf.example /etc/slurm/slurm.conf.example \
@@ -92,6 +115,8 @@ RUN set -x \
     && chown slurm:slurm /etc/slurm/slurmdbd.conf \
     && chmod 600 /etc/slurm/slurmdbd.conf
 
+RUN groupadd -r --gid=980 mark \
+    && useradd -r -g mark --uid=980 mark
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
