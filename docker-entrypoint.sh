@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+echo $@
+
 if [ "$1" = "slurmdbd" ]
 then
     echo "---> Starting the MUNGE Authentication service (munged) ..."
@@ -23,6 +25,8 @@ fi
 
 if [ "$1" = "slurmctld" ]
 then
+
+    eval "echo \"$(cat /etc/slurm/slurm.conf)\"" > /etc/slurm/slurm.conf
     echo "---> Starting the MUNGE Authentication service (munged) ..."
     gosu munge /usr/sbin/munged
 
@@ -45,6 +49,8 @@ fi
 
 if [ "$1" = "slurmd" ]
 then
+    
+    eval "echo \"$(cat /etc/slurm/slurm.conf)\"" > /etc/slurm/slurm.conf
     echo "---> Starting the MUNGE Authentication service (munged) ..."
     gosu munge /usr/sbin/munged
 

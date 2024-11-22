@@ -1,8 +1,8 @@
+version: '3.1'
 services:
   mysql:
     image: mariadb:10.11
     hostname: mysql
-    container_name: mysql
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: slurm_acct_db
@@ -15,13 +15,11 @@ services:
 
   slurmdbd:
     image: slurm-docker-cluster:${IMAGE_TAG}
-    build:
-      context: .
-      args:
-        SLURM_TAG: ${SLURM_TAG}
     command: ["slurmdbd"]
     container_name: slurmdbd
     hostname: slurmdbd
+    environment:
+      SLURM_NUM_NODES: 4
     volumes:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
@@ -38,10 +36,12 @@ services:
     command: ["slurmctld"]
     container_name: slurmctld
     hostname: slurmctld
+    environment:
+      SLURM_NUM_NODES: 4
     volumes:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
-      - slurm_jobdir:/data
+      - ${DATA:-slurm_jobdir}:/data
       - var_log_slurm:/var/log/slurm
     expose:
       - "6817"
@@ -50,15 +50,17 @@ services:
     networks:
       - slurm-network
 
-  c1:
+  worker-1: &worker
     image: slurm-docker-cluster:${IMAGE_TAG}
     command: ["slurmd"]
-    hostname: c1
-    container_name: c1
+    container_name: worker-1
+    hostname: worker-1
+    environment:
+      SLURM_NUM_NODES: 4
     volumes:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
-      - slurm_jobdir:/data
+      - ${DATA:-slurm_jobdir}:/data
       - var_log_slurm:/var/log/slurm
     expose:
       - "6818"
@@ -67,22 +69,21 @@ services:
     networks:
       - slurm-network
 
-  c2:
-    image: slurm-docker-cluster:${IMAGE_TAG}
-    command: ["slurmd"]
-    hostname: c2
-    container_name: c2
-    volumes:
-      - etc_munge:/etc/munge
-      - etc_slurm:/etc/slurm
-      - slurm_jobdir:/data
-      - var_log_slurm:/var/log/slurm
-    expose:
-      - "6818"
-    depends_on:
-      - "slurmctld"
-    networks:
-      - slurm-network
+  worker-2:
+    <<: *worker
+    container_name: worker-2
+    hostname: worker-2
+
+  worker-3:
+    <<: *worker
+    container_name: worker-3
+    hostname: worker-3
+
+  worker-4:
+    <<: *worker
+    container_name: worker-4
+    hostname: worker-4
+
 
 volumes:
   etc_munge:

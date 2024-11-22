@@ -1,4 +1,4 @@
-FROM rockylinux:8
+FROM rockylinux:9
 
 LABEL org.opencontainers.image.source="https://github.com/giovtorres/slurm-docker-cluster" \
       org.opencontainers.image.title="slurm-docker-cluster" \
@@ -9,9 +9,9 @@ LABEL org.opencontainers.image.source="https://github.com/giovtorres/slurm-docke
 RUN set -ex \
     && yum makecache \
     && yum -y update \
-    && yum -y install dnf-plugins-core \
-    && yum config-manager --set-enabled powertools \
-    && yum -y install \
+    && yum -y install dnf-plugins-core
+RUN yum config-manager --enable crb
+RUN yum -y install \
        wget \
        bzip2 \
        perl \
@@ -40,8 +40,6 @@ RUN set -ex \
        jansson-devel \
     && yum clean all \
     && rm -rf /var/cache/yum
-
-RUN alternatives --set python /usr/bin/python3
 
 RUN pip3 install Cython pytest
 
@@ -109,12 +107,20 @@ RUN set -x \
     && chown -R slurm:slurm /var/*/slurm* \
     && /sbin/create-munge-key
 
+
 RUN mkdir -p /var/spool/slurm/statesave \
     && dd if=/dev/random of=/var/spool/slurm/statesave/jwt_hs256.key bs=32 count=1 \
     && chown slurm:slurm /var/spool/slurm/statesave/jwt_hs256.key \
     && chmod 0600 /var/spool/slurm/statesave/jwt_hs256.key \
     && chown slurm:slurm /var/spool/slurm/statesave \
     && chmod 0755 /var/spool/slurm/statesave
+
+# setup slip
+RUN yum -y install  python3.11 && \
+  python3.11 -m ensurepip --upgrade
+
+RUN python3.11 -m pip install --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple ska-sdp-spectral-line-imaging
+
 
 COPY slurm.conf /etc/slurm/slurm.conf
 COPY slurmdbd.conf /etc/slurm/slurmdbd.conf
