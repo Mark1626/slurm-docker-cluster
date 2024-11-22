@@ -58,7 +58,7 @@ RUN set -ex \
 RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollins/libjwt.git libjwt \
     && pushd libjwt \
     && autoreconf --force --install \
-    && ./configure --prefix=/usr/local \
+    && ./configure --prefix=/usr/ \
     && make -j \
     && make install \
     && popd
@@ -66,7 +66,7 @@ RUN git clone --depth 1 --single-branch -b v1.12.0 https://github.com/benmcollin
 RUN git clone --depth 1 --single-branch -b 0.2.5 https://github.com/yaml/libyaml libyaml \
     && pushd libyaml \
     && ./bootstrap \
-    && ./configure \
+    && ./configure --prefix=/usr/ \
     && make \
     && make install \
     && popd
@@ -78,7 +78,7 @@ RUN set -x \
     && pushd slurm \
     && ./configure --enable-debug --prefix=/usr --sysconfdir=/etc/slurm \
         --with-mysql_config=/usr/bin  --libdir=/usr/lib64 \
-        --with-yaml=/usr/local/ --with-jwt=/usr/local/ \
+        --with-yaml=/usr/ --with-jwt=/usr/ \
     && make install \
     && install -D -m644 etc/cgroup.conf.example /etc/slurm/cgroup.conf.example \
     && install -D -m644 etc/slurm.conf.example /etc/slurm/slurm.conf.example \
