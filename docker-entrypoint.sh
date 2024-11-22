@@ -3,8 +3,11 @@ set -e
 
 echo $@
 
+eval "echo \"$(cat /etc/slurm/slurm.conf)\"" > /etc/slurm/slurm.conf
+
 if [ "$1" = "slurmdbd" ]
 then
+    
     echo "---> Starting the MUNGE Authentication service (munged) ..."
     gosu munge /usr/sbin/munged
 
@@ -26,7 +29,6 @@ fi
 if [ "$1" = "slurmctld" ]
 then
 
-    eval "echo \"$(cat /etc/slurm/slurm.conf)\"" > /etc/slurm/slurm.conf
     echo "---> Starting the MUNGE Authentication service (munged) ..."
     gosu munge /usr/sbin/munged
 
@@ -49,8 +51,6 @@ fi
 
 if [ "$1" = "slurmrestd" ]
 then
-
-    eval "echo \"$(cat /etc/slurm/slurm.conf)\"" > /etc/slurm/slurm.conf
     
     echo "---> Waiting for slurmctld to become active before starting slurmrestd..."
 
@@ -62,13 +62,11 @@ then
     echo "-- slurmctld is now active ..."
 
     echo "---> Starting the Slurm Rest Daemon (slurmrestd) ..."
-    exec gosu mark /usr/sbin/slurmrestd :6820 -v
+    exec gosu mark /usr/sbin/slurmrestd 0.0.0.0:6820 -v
 fi
 
 if [ "$1" = "slurmd" ]
 then
-    
-    eval "echo \"$(cat /etc/slurm/slurm.conf)\"" > /etc/slurm/slurm.conf
     echo "---> Starting the MUNGE Authentication service (munged) ..."
     gosu munge /usr/sbin/munged
 
