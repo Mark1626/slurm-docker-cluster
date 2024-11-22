@@ -78,6 +78,14 @@ This will start up all containers in detached mode. You can monitor their status
 docker compose ps
 ```
 
+## Podman
+
+This repo should be able to run with `podman` and `podman-compose`. If a local folder is to be mounted, podman will require `:z` at the end of the volume mount arugment. This can be passed by providing `MOUNT_FLAG=:z`
+
+```
+MOUNT_FLAGS=:z DATA=/path/to/mount podman compose up
+```
+
 ## 📝 Register the Cluster
 
 After the containers are up and running, register the cluster with **SlurmDBD**:
@@ -126,6 +134,18 @@ Check the output of the job:
 ```bash
 [root@slurmctld data]# cat slurm-2.out
 c1
+```
+
+## REST API
+
+The `docker-compose.yml` contains a `slurmrestd` service running at port 6820. This port is exposed to the host machine, after getting a `JWT_TOKEN` the REST API can be called.
+
+The following example works within any of the containers, it set the `JWT_TOKEN` and involves the diagonisis API
+
+```
+export USER=mark
+export $(scontrol token username=$USER)
+curl -s -k -vvvv -H X-SLURM-USER-NAME:$USER -H X-SLURM-USER-TOKEN:$SLURM_JWT -X GET 'http://127.0.0.1:6820/slurm/v0.0.37/diag'
 ```
 
 ## 🔄 Cluster Management

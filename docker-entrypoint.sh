@@ -47,6 +47,24 @@ then
     fi
 fi
 
+if [ "$1" = "slurmrestd" ]
+then
+
+    eval "echo \"$(cat /etc/slurm/slurm.conf)\"" > /etc/slurm/slurm.conf
+    
+    echo "---> Waiting for slurmctld to become active before starting slurmrestd..."
+
+    until 2>/dev/null >/dev/tcp/slurmctld/6817
+    do
+        echo "-- slurmctld is not available.  Sleeping ..."
+        sleep 2
+    done
+    echo "-- slurmctld is now active ..."
+
+    echo "---> Starting the Slurm Rest Daemon (slurmrestd) ..."
+    exec gosu mark /usr/sbin/slurmrestd :6820 -v
+fi
+
 if [ "$1" = "slurmd" ]
 then
     

@@ -41,10 +41,32 @@ services:
     volumes:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
-      - ${DATA:-slurm_jobdir}:/data
+      - ${DATA:-slurm_jobdir}:/data${MOUNT_FLAGS}
       - var_log_slurm:/var/log/slurm
     expose:
       - "6817"
+    depends_on:
+      - "slurmdbd"
+    networks:
+      - slurm-network
+
+  slurmrestd:
+    image: slurm-docker-cluster:${IMAGE_TAG}
+    command: ["slurmrestd"]
+    container_name: slurmrestd
+    hostname: slurmrestd
+    environment:
+      SLURM_JWT: daemon
+      SLURM_NUM_NODES: 4
+    volumes:
+      - etc_munge:/etc/munge
+      - etc_slurm:/etc/slurm
+      - ${DATA:-slurm_jobdir}:/data${MOUNT_FLAGS}
+      - var_log_slurm:/var/log/slurm
+    expose:
+      - "6820"
+    ports:
+      - "6820:6820"
     depends_on:
       - "slurmdbd"
     networks:
@@ -60,7 +82,7 @@ services:
     volumes:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
-      - ${DATA:-slurm_jobdir}:/data
+      - ${DATA:-slurm_jobdir}:/data${MOUNT_FLAGS}
       - var_log_slurm:/var/log/slurm
     expose:
       - "6818"
