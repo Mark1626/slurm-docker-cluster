@@ -2,7 +2,6 @@
 
 #! Slurm options ###############################
 #SBATCH -J ska_sdp_spectral_line_imaging
-#SBATCH -p icelake
 #SBATCH --nodes=3
 #SBATCH --ntasks=4
 #SBATCH --time=02:00:00
