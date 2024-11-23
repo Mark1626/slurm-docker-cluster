@@ -148,6 +148,16 @@ export $(scontrol token username=$USER)
 curl -s -k -vvvv -H X-SLURM-USER-NAME:$USER -H X-SLURM-USER-TOKEN:$SLURM_JWT -X GET 'http://127.0.0.1:6820/slurm/v0.0.37/diag'
 ```
 
+Get list of executed jobs
+
+```
+curl -H "X-SLURM-USER-NAME:$USER" -H "X-SLURM-USER-TOKEN:${SLURM_JWT}" http://localhost:6820/slurm/v0.0.37/jobs\
+```
+
+### Running via attached python script
+
+`JOB_NAME="Hello World" SCRIPT="/data/hello_world" SLURM_USER_NAME=mark python slurm_submit_request.py`
+
 ## 🔄 Cluster Management
 
 ### Stopping and Restarting:

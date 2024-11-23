@@ -1,4 +1,3 @@
-version: '3.1'
 services:
   mysql:
     image: mariadb:10.11
@@ -24,6 +23,7 @@ services:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
       - var_log_slurm:/var/log/slurm
+      - var_spool_slurm:/var/spool/slurmd      
     expose:
       - "6819"
     depends_on:
@@ -38,14 +38,21 @@ services:
     hostname: slurmctld
     environment:
       SLURM_NUM_NODES: ${SLURM_NUM_NODES:-5}
+    security_opt:
+      - seccomp:unconfined            
     volumes:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
-      - ${DATA:-slurm_jobdir}:/data${MOUNT_FLAGS}
+      - slurm_jobdir:/job
+      - ${DATA:-slurm_datadir}:/data${MOUNT_FLAGS}
       - var_log_slurm:/var/log/slurm
+      - var_spool_slurm:/var/spool/slurmd      
     expose:
       - "6817"
       - "8786"
+      - "22"
+    ports:
+      - "6817:6817"
     depends_on:
       - "slurmdbd"
     networks:
@@ -62,10 +69,10 @@ services:
     volumes:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
-      - ${DATA:-slurm_jobdir}:/data${MOUNT_FLAGS}
+      - slurm_jobdir:/job
+      - ${DATA:-slurm_datadir}:/data${MOUNT_FLAGS}
       - var_log_slurm:/var/log/slurm
-    expose:
-      - "6820"
+      - var_spool_slurm:/var/spool/slurmd      
     security_opt:
       - seccomp:unconfined      
     ports:
@@ -85,8 +92,10 @@ services:
     volumes:
       - etc_munge:/etc/munge
       - etc_slurm:/etc/slurm
-      - ${DATA:-slurm_jobdir}:/data${MOUNT_FLAGS}
+      - slurm_jobdir:/job
+      - ${DATA:-slurm_datadir}:/data${MOUNT_FLAGS}
       - var_log_slurm:/var/log/slurm
+      - var_spool_slurm:/var/spool/slurmd
     expose:
       - "6818"
       - "8786"      
@@ -120,8 +129,10 @@ volumes:
   etc_munge:
   etc_slurm:
   slurm_jobdir:
+  slurm_datadir:
   var_lib_mysql:
   var_log_slurm:
+  var_spool_slurm:
 
 networks:
   slurm-network:

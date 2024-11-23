@@ -62,7 +62,8 @@ then
     echo "-- slurmctld is now active ..."
 
     echo "---> Starting the Slurm Rest Daemon (slurmrestd) ..."
-    exec gosu mark /usr/sbin/slurmrestd 0.0.0.0:6820 -v
+    export SLURM_JWT=daemon
+    exec gosu restd slurmrestd -a rest_auth/jwt -s openapi/v0.0.37 -vvv 0.0.0.0:6820
 fi
 
 if [ "$1" = "slurmd" ]

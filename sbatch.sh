@@ -2,10 +2,11 @@
 
 #! Slurm options ###############################
 #SBATCH -J ska_sdp_spectral_line_imaging
-#SBATCH --nodes=3
+#SBATCH -p normal
+##SBATCH --nodes=4
 #SBATCH --ntasks=4
 #SBATCH --time=02:00:00
-#SBATCH --mem=64000
+#SBATCH --mem=400
 
 #SBATCH --no-requeue
 
@@ -33,7 +34,7 @@ DASK_LOGS_DIR=${WORKDIR}/logs
 application="spectral-line-imaging-pipeline"
 
 #! Run options for the application:
-options="run --input $INPUT_MS --config $INPUT_CONFIG"
+options="run --input /data/GMRT_freq5_xrad40.ps --config /data/gmrt_slip_data.yml"
 
 
 workdir=$WORKDIR

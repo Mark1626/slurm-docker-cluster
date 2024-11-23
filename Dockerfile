@@ -128,8 +128,15 @@ RUN set -x \
     && chown slurm:slurm /etc/slurm/slurmdbd.conf \
     && chmod 600 /etc/slurm/slurmdbd.conf
 
-RUN groupadd -r --gid=980 mark \
-    && useradd -r -g mark --uid=980 mark
+RUN groupadd -r --gid=980 restd \
+  && useradd -r -g restd --uid=980 restd 
+
+
+RUN groupadd -r --gid=981 mark \
+  && useradd -r -g mark --uid=981 mark
+
+RUN mkdir /job && chmod -R ugo+rwx /job
+RUN chmod -R ugo+w /var/spool/slurmd/
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
