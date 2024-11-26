@@ -121,6 +121,9 @@ RUN yum -y install  python3.11 && \
 
 RUN python3.11 -m pip install --extra-index-url https://artefact.skao.int/repository/pypi-internal/simple ska-sdp-spectral-line-imaging
 
+RUN python3.11 -m pip install flask flask_executor flask_shell2http
+COPY cmd_executor.py /usr/local/bin/cmd_executor.py
+EXPOSE 6999
 
 COPY slurm.conf /etc/slurm/slurm.conf
 COPY slurmdbd.conf /etc/slurm/slurmdbd.conf

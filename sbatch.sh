@@ -34,7 +34,7 @@ DASK_LOGS_DIR=${WORKDIR}/logs
 application="spectral-line-imaging-pipeline"
 
 #! Run options for the application:
-options="run --input /data/GMRT_freq5_xrad40.ps --config /data/gmrt_slip_data.yml"
+options="run --input /data/GMRT_freq5_xrad40.ps --config /data/gmrt_slip_data.yml --output /job/output"
 
 
 workdir=$WORKDIR

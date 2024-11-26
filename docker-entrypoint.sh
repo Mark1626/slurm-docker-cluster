@@ -73,6 +73,9 @@ then
 
     echo "---> Waiting for slurmctld to become active before starting slurmd..."
 
+    mkdir -p /job/logs
+    gosu slurm python3.11 /usr/local/bin/cmd_executor.py 2>&1 > /job/logs/flask.log &
+
     until 2>/dev/null >/dev/tcp/slurmctld/6817
     do
         echo "-- slurmctld is not available.  Sleeping ..."
