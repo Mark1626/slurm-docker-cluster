@@ -158,6 +158,11 @@ curl -H "X-SLURM-USER-NAME:$USER" -H "X-SLURM-USER-TOKEN:${SLURM_JWT}" http://lo
 
 `JOB_NAME="Hello World" SCRIPT="/data/hello_world" SLURM_USER_NAME=mark python slurm_submit_request.py`
 
+### Running spectral line imaging pipeline
+Code modification has been done to spectral line imaging pipeline to support creation of a slurm based dask-cluster. The `--dask-scheduler` option allows to run within the slurm cluster
+
+`spectral-line-imaging-pipeline run --input /data/path/input.ps --config /data/path/config.yml --output /job/output --dask-scheduler true`
+
 ## 🔄 Cluster Management
 
 ### Stopping and Restarting:

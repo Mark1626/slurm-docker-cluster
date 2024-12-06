@@ -142,6 +142,7 @@ RUN mkdir /job && chmod -R ugo+rwx /job
 RUN chmod -R ugo+w /var/spool/slurmd/
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY cluster_slip.py /usr/local/lib/python3.11/site-packages/ska_sdp_piper/piper/executors/distributed_executor.py
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 CMD ["slurmdbd"]
